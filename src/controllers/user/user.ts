@@ -3,11 +3,13 @@ import * as crypto from "crypto";
 import * as nodemailer from "nodemailer";
 import * as passport from "passport";
 import { default as User, UserModel, AuthToken } from "../../models/User";
+import { Newsletter, NewsletterModel } from "../../models/Newsletter";
 import { Request, Response, NextFunction } from "express";
 import { IVerifyOptions } from "passport-local";
 import { WriteError } from "mongodb";
+import { concat } from "async";
+import { isEmail } from "validator";
 const request = require("express-validator");
-
 
 
 /**
@@ -103,5 +105,57 @@ export let getOauthUnlink = (req: Request, res: Response, next: NextFunction) =>
 			if (err) { return next(err); }
 			res.redirect("/user/account");
 		});
+	});
+};
+
+
+
+/**
+ * POST /newsletter
+ * subscribe to the newsletter
+ */
+export const postSubmitNewletter = (req: Request, res: Response) => {
+	if (!req.body.email) {
+		res.json({status: 405, message: "no email provided", data: ""});
+		return;
+	}
+	if (!isEmail(req.body.email)) {
+		res.json({status: 406, message: "email not valid", data: ""});
+		return;
+	}
+	Newsletter.create({"email": req.body.email}, (err: WriteError) => {
+		if (err) {
+			if (err.code === 11000) {
+				res.json({status: 200, message: "email already on the DB", error: undefined, data: undefined});
+				return;
+			}
+		}
+		res.json({status: 200, message: "", error: undefined, data: undefined});
+		return;
+	});
+};
+
+
+
+/**
+ * DELETE /newsletter
+ * subscribe to the newsletter
+ */
+export const deleteNewletter = (req: Request, res: Response) => {
+	if (!req.body.email) {
+		res.json({status: 405, message: "no email provided", data: ""});
+		return;
+	}
+	if (!isEmail(req.body.email)) {
+		res.json({status: 406, message: "email not valid", data: ""});
+		return;
+	}
+	Newsletter.deleteOne({email: req.body.email}, (err: Error) => {
+		if (err) {
+			res.json({status: 503, message: "", err: err, data: ""});
+			return;
+		}
+		res.json({status: 200, message: "sucessfull delete the email from newsletter", data: ""});
+	return;
 	});
 };
