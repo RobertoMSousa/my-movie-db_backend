@@ -16,13 +16,13 @@
 
 ## Details
 ### Name
-NodeJS Seed
+My Movie DB to 
 
 ### Description
-This is a basic seed inspired by the Microsoft repository but with some particular changes on the file structure to make easier the development.
+
 
 ### Author
-Roberto Sousa
+Roberto Sousa 
 
 
 ## Requirements
