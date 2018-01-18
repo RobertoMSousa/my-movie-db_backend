@@ -1,0 +1,100 @@
+FORMAT: 1A
+HOST: http://localhost:8080/
+
+# movieDB
+
+Polls is a simple API allowing consumers to view polls and vote in them.
+
+## Authentication
+### login [/auth/login/:sample]
+
+#### send login params [POST]
++ Parameters 
+    + sample
+    + another
+
++ Response 200 (application/json)
+
+        {
+            message:"",
+            err:"",
+            data:""
+        }
+
++ Response 403 (application/json)
+        
+        {
+            message:"",
+            err:"",
+            data:""
+        }
+        
++ Response 406 (application/json)
+        
+        {
+            message:"",
+            err:"",
+            data:""
+        }
+        
++ Response 500 (application/json)
+    
+        {
+            message:"",
+            err:"",
+            data:""
+        }
+    
+
+### logout [/auth/logout]
+
+#### logout [GET]
++ Response 200 (application/json)
+
+### signup [/auth/signup]
+
+#### signup [POST]
++ Payload
++ Body
++ Params
++ Response 200 (application/json)
+
+### Forgot Password [/auth/forgot]
+
+#### forgot [GET]
++ Payload
++ Body
++ Params
++ Response 200 (application/json)
+
+#### FORGOT [POST]
++ Payload
++ Body
++ Params
++ Response 200 (application/json)
+
+### reset [/reset/:token]   
+
+#### reset [GET]   
++ Payload
++ Body
++ Params
++ Response 200 (application/json)
+
+#### reset [POST]
++ Payload
++ Body
++ Params
++ Response 200 (application/json)
+
+### facebook [GET /facebook]
++ Payload
++ Body
++ Params
++ Response 200 (application/json)
+
+### facebook callback [GET /facebook/callback]
++ Payload
++ Body
++ Params
++ Response 200 (application/json)
