@@ -9,32 +9,26 @@ import { IVerifyOptions } from "passport-local";
 import { WriteError } from "mongodb";
 import { concat } from "async";
 import { isEmail } from "validator";
-const request = require("express-validator");
 
 
 /**
  * GET /account
  * Profile page.
  */
-export let getAccount = (req: Request, res: Response) => {
-	res.render("account/profile", {
-		title: "Account Management"
-	});
+export const getAccount = (req: Request, res: Response) => {
+	res.status(200).json({message: "this should be only workign if logged in", error: undefined, data: undefined});
+	return;
 };
 
 /**
  * POST /account/profile
  * Update profile information.
  */
-export let postUpdateProfile = (req: Request, res: Response, next: NextFunction) => {
-	req.assert("email", "Please enter a valid email address.").isEmail();
-	req.sanitize("email").normalizeEmail({ gmail_remove_dots: false });
+export const postUpdateProfile = (req: Request, res: Response, next: NextFunction) => {
 
-	const errors = req.validationErrors();
-
-	if (errors) {
-		return res.redirect("/user/account");
-	}
+	/*
+	TODO: check the params
+	*/
 
 	User.findById(req.user.id, (err, user: UserModel) => {
 		if (err) { return next(err); }
@@ -60,14 +54,10 @@ export let postUpdateProfile = (req: Request, res: Response, next: NextFunction)
  * Update current password.
  */
 export let postUpdatePassword = (req: Request, res: Response, next: NextFunction) => {
-	req.assert("password", "Password must be at least 4 characters long").len({ min: 4 });
-	req.assert("confirmPassword", "Passwords do not match").equals(req.body.password);
 
-	const errors = req.validationErrors();
-
-	if (errors) {
-		return res.redirect("/user/account");
-	}
+	/*
+	TODO: check the params
+	*/
 
 	User.findById(req.user.id, (err, user: UserModel) => {
 		if (err) { return next(err); }
@@ -123,14 +113,14 @@ export const postSubmitNewletter = (req: Request, res: Response) => {
 		res.json({status: 406, message: "email not valid", data: ""});
 		return;
 	}
-	Newsletter.create({"email": req.body.email}, (err: WriteError) => {
+	Newsletter.create({"email": req.body.email.toLowerCase(), confirmed: false}, (err: WriteError) => {
 		if (err) {
 			if (err.code === 11000) {
 				res.json({status: 200, message: "email already on the DB", error: undefined, data: undefined});
 				return;
 			}
 		}
-		res.json({status: 200, message: "", error: undefined, data: undefined});
+		res.json({status: 200, message: "subscribed email", error: undefined, data: undefined});
 		return;
 	});
 };
@@ -150,7 +140,7 @@ export const deleteNewletter = (req: Request, res: Response) => {
 		res.json({status: 406, message: "email not valid", data: ""});
 		return;
 	}
-	Newsletter.deleteOne({email: req.body.email}, (err: Error) => {
+	Newsletter.deleteOne({email: req.body.email.toLowerCase()}, (err: Error) => {
 		if (err) {
 			res.json({status: 503, message: "", err: err, data: ""});
 			return;
