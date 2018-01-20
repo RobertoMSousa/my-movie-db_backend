@@ -25,7 +25,6 @@ export namespace Routes {
 			.post(userCtrl.postSubmitNewletter)
 			.delete(userCtrl.deleteNewletter);
 
-
 		return router;
 	}
 }

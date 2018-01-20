@@ -122,7 +122,8 @@ export let isAuthenticated = (req: Request, res: Response, next: NextFunction) =
 	if (req.isAuthenticated()) {
 		return next();
 	}
-	res.redirect("/login");
+	res.status(403).json({message: "login required", error: undefined, data: undefined});
+	return;
 };
 
 /**

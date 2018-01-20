@@ -6,10 +6,9 @@ export type NewsletterModel = mongoose.Document & {
 };
 
 const newsLetterSchema = new mongoose.Schema({
-	email: { type: String, unique: true }
+	email: { type: String, unique: true },
+	confirmed: {type: Boolean, default: false, unique: false}
 }, { timestamps: true });
 
 
 export const Newsletter = mongoose.model("Newsletter", newsLetterSchema);
-
-// export default Newsletter;

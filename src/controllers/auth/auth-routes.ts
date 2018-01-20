@@ -7,14 +7,12 @@ export namespace Routes {
 	export function auth(): express.Router {
 		const router = express.Router();
 		router.route("/login")
-			.get(authCtrl.getLogin)
 			.post(authCtrl.postLogin);
 
 		router.route("/logout")
 			.get(authCtrl.logout);
 
 		router.route("/signup")
-			.get(authCtrl.getSignup)
 			.post(authCtrl.postSignup);
 
 		router.route("/forgot")
