@@ -10,7 +10,6 @@ import * as flash from "express-flash";
 import * as path from "path";
 import * as mongoose from "mongoose";
 import * as passport from "passport";
-import * as expressValidator from "express-validator";
 import * as bluebird from "bluebird";
 
 
@@ -42,7 +41,6 @@ app.use(compression());
 app.use(logger("dev"));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
-app.use(expressValidator());
 app.use(session({
 	resave: true,
 	saveUninitialized: true,
