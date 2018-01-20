@@ -1,4 +1,5 @@
 
+
 import * as async from "async";
 import * as crypto from "crypto";
 import * as nodemailer from "nodemailer";
@@ -7,20 +8,10 @@ import { default as User, UserModel, AuthToken } from "../../models/User";
 import { Request, Response, NextFunction } from "express";
 import { IVerifyOptions } from "passport-local";
 import { WriteError } from "mongodb";
-const request = require("express-validator");
+import { isEmail } from "validator";
+import { each } from "async";
+import { Error } from "mongoose";
 
-/*
- * GET /login
- * Login page.
- */
-export const getLogin = (req: Request, res: Response) => {
-	if (req.user) {
-		return res.redirect("/");
-	}
-	res.render("account/login", {
-		title: "Login"
-	});
-};
 
 
 /*
@@ -28,24 +19,39 @@ export const getLogin = (req: Request, res: Response) => {
  *Sign in using email and password.
  */
 export const postLogin = (req: Request, res: Response, next: NextFunction) => {
-	req.assert("email", "Email is not valid").isEmail();
-	req.assert("password", "Password cannot be blank").notEmpty();
-	req.sanitize("email").normalizeEmail({ gmail_remove_dots: false });
 
-	const errors = req.validationErrors();
+	console.log("postLogin-->", req.body); // roberto
+	if (!req.body.email) {
+		res.status(403).json({message: "no email provided", error: undefined, data: undefined});
+		return;
+	}
 
-	if (errors) {
-		return res.redirect("/login");
+	if (!isEmail(req.body.email)) {
+		res.status(406).json({message: "email not valid", err: undefined, data: undefined});
+		return;
+	}
+
+	if (!req.body.password) {
+		res.status(403).json({message: "no password provided", error: undefined, data: undefined});
+		return;
 	}
 
 	passport.authenticate("local", (err: Error, user: UserModel, info: IVerifyOptions) => {
-		if (err) { return next(err); }
-		if (!user) {
-			return res.redirect("/login");
+		if (err) {
+			res.status(500).json({message: undefined, error: err.message, data: undefined});
+			return;
 		}
-		req.logIn(user, (err) => {
-			if (err) { return next(err); }
-			res.redirect(req.session.returnTo || "/");
+		if (!user) {
+			res.status(404).json({message: "email or password are wrong", error: undefined, data: undefined});
+			return;
+		}
+		req.logIn(user, (err: Error) => {
+			if (err) {
+				res.status(500).json({message: undefined, error: err.message, data: undefined});
+				return;
+			}
+			res.status(200).json({message: "login with success", error: undefined, data: undefined});
+			return;
 		});
 	})(req, res, next);
 };
@@ -58,36 +64,36 @@ export const postLogin = (req: Request, res: Response, next: NextFunction) => {
  */
 export const logout = (req: Request, res: Response) => {
 	req.logout();
-	res.redirect("/");
-};
-
-/**
- * GET /signup
- * Signup page.
- */
-export const getSignup = (req: Request, res: Response) => {
-	if (req.user) {
-		return res.redirect("/");
-	}
-	res.render("account/signup", {
-		title: "Create Account"
-	});
+	res.status(200).json({message: "logout success", error: undefined, data: undefined});
+	return;
+	// res.redirect("/");
 };
 
 /**
  * POST /signup
- * Create a new local account.
+ * Create a new local account
+ * Params:
+ * email -> string
+ * password -> string
+ * passwordRepeated -> string
  */
 export const postSignup = (req: Request, res: Response, next: NextFunction) => {
-	req.assert("email", "Email is not valid").isEmail();
-	req.assert("password", "Password must be at least 4 characters long").len({ min: 4 });
-	req.assert("confirmPassword", "Passwords do not match").equals(req.body.password);
-	req.sanitize("email").normalizeEmail({ gmail_remove_dots: false });
 
-	const errors = req.validationErrors();
-
-	if (errors) {
-		return res.redirect("/signup");
+	if (!req.body.email) {
+		res.status(403).json({message: "no email provided", error: undefined, data: undefined});
+		return;
+	}
+	if (!isEmail(req.body.email)) {
+		res.status(500).json({message: "email not valid", error: undefined, data: undefined});
+		return;
+	}
+	if (!req.body.password || !req.body.passwordRepeated) {
+		res.status(403).json({message: "no password provided", error: undefined, data: undefined});
+		return;
+	}
+	if (req.body.password !== req.body.passwordRepeated) {
+		res.status(500).json({message: "passwords don't match", error: undefined, data: undefined});
+		return;
 	}
 
 	const user = new User({
@@ -98,15 +104,20 @@ export const postSignup = (req: Request, res: Response, next: NextFunction) => {
 	User.findOne({ email: req.body.email }, (err, existingUser) => {
 		if (err) { return next(err); }
 		if (existingUser) {
-			return res.redirect("/signup");
+			res.status(302).json({message: "user already exist", error: undefined, data: undefined});
+			return;
 		}
 		user.save((err) => {
-			if (err) { return next(err); }
-			req.logIn(user, (err) => {
+			if (err) {
+				return next(err);
+			}
+			req.logIn(user, (err: Error) => {
 				if (err) {
-					return next(err);
+					res.status(500).json({message: undefined, error: err.message, data: undefined});
+					return;
 				}
-				res.redirect("/");
+				res.status(200).json({message: "account created", error: undefined, data: undefined});
+				return;
 			});
 		});
 	});
@@ -118,14 +129,10 @@ export const postSignup = (req: Request, res: Response, next: NextFunction) => {
  * Create a random token, then the send user an email with a reset link.
  */
 export const postForgot = (req: Request, res: Response, next: NextFunction) => {
-	req.assert("email", "Please enter a valid email address.").isEmail();
-	req.sanitize("email").normalizeEmail({ gmail_remove_dots: false });
 
-	const errors = req.validationErrors();
-
-	if (errors) {
-		return res.redirect("/forgot");
-	}
+	/*
+	TODO: check the params
+	*/
 
 	async.waterfall([
 		function createRandomToken(done: Function) {
@@ -215,14 +222,10 @@ export const getReset = (req: Request, res: Response, next: NextFunction) => {
  * Process the reset password request.
  */
 export const postReset = (req: Request, res: Response, next: NextFunction) => {
-	req.assert("password", "Password must be at least 4 characters long.").len({ min: 4 });
-	req.assert("confirm", "Passwords must match.").equals(req.body.password);
 
-	const errors = req.validationErrors();
-
-	if (errors) {
-		return res.redirect("back");
-	}
+	/*
+	TODO: check the req params
+	*/
 
 	async.waterfall([
 		function resetPassword(done: Function) {
