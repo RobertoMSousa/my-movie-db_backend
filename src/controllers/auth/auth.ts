@@ -20,7 +20,6 @@ import { Error } from "mongoose";
  */
 export const postLogin = (req: Request, res: Response, next: NextFunction) => {
 
-	console.log("postLogin-->", req.body); // roberto
 	if (!req.body.email) {
 		res.status(403).json({message: "no email provided", error: undefined, data: undefined});
 		return;
