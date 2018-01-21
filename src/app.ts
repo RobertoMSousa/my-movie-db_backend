@@ -83,9 +83,11 @@ import authRoutes = require("./controllers/auth/auth-routes");
 import apiRoutes = require("./controllers/api/api-routes");
 import contactRoutes = require("./controllers/contact/contact-routes");
 import userRoutes = require("./controllers/user/user-routes");
+import newsletterRoutes = require("./controllers/newsletter/newsletter-routes");
 
 app.use("/", homeRoutes.Routes.home());
 app.use("/auth", authRoutes.Routes.auth());
+app.use("/newsletter", newsletterRoutes.Routes.index());
 app.use("/api", apiRoutes.Routes.api());
 app.use("/contact", contactRoutes.Routes.contact());
 app.use("/user", userRoutes.Routes.index());

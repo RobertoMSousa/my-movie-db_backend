@@ -21,10 +21,6 @@ export namespace Routes {
 		router.route("/account/password")
 			.post(passportConfig.isAuthenticated, userCtrl.postUpdatePassword);
 
-		router.route("/newsletter")
-			.post(userCtrl.postSubmitNewletter)
-			.delete(userCtrl.deleteNewletter);
-
 		return router;
 	}
 }
