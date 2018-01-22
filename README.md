@@ -16,13 +16,16 @@
 
 ## Details
 ### Name
-My Movie DB to 
+My Movie DB backend
 
 ### Description
-
+This is the backend that is used in the movie DB react app that can be found [here](https://github.com/RobertoMSousa/my-movie-db).
+At this point, this is at very simple stage with new features coming up at a slow pace.
+Please note that this project is part of my coding hobby and is not intended to be used as a commercial product. Please contact the author of the project for any further questions.
+The website can be tested [here](https://my-movie-db-roberto.herokuapp.com/) but please notice that is stored on the [heroku](https://www.heroku.com/home) free tier that sleeps after 30 minutes of inactivity and can take some minutes to wake up.
 
 ### Author
-Roberto Sousa 
+Roberto Sousa <betos.sousa22@gmail.com>
 
 
 ## Requirements
@@ -45,7 +48,7 @@ mongod
 yarn develop
 ```
 
-Navigate to `http://localhost:3000`
+Navigate to `http://localhost:8080`
 
 ##Build
 | Yarn Script | Description |
@@ -69,7 +72,7 @@ For this project, I chose [Jest](https://facebook.github.io/jest/) as our test f
 While Mocha is probably more common, Mocha seems to be looking for a new maintainer and setting up TypeScript testing in Jest is wicked simple.
 
 ## Support
-Please [open an issue](<place link here>) for support.
+Please [open an issue](https://github.com/RobertoMSousa/my-movie-db_backend/issues) for support.
 
 ## Credits
 This repository was created based on the Microsoft repository provided [here](https://github.com/Microsoft/TypeScript-Node-Starter).
