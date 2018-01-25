@@ -4,13 +4,16 @@ import * as async from "async";
 import * as crypto from "crypto";
 import * as nodemailer from "nodemailer";
 import * as passport from "passport";
-import { default as User, UserModel, AuthToken } from "../../models/User";
 import { Request, Response, NextFunction } from "express";
 import { IVerifyOptions } from "passport-local";
 import { WriteError } from "mongodb";
 import { isEmail } from "validator";
 import { each } from "async";
 import { Error } from "mongoose";
+import * as moment from "moment";
+
+// mode
+import { default as User, UserModel, AuthToken } from "../../models/User";
 
 
 
@@ -100,8 +103,12 @@ export const postSignup = (req: Request, res: Response, next: NextFunction) => {
 		password: req.body.password
 	});
 
-	User.findOne({ email: req.body.email }, (err, existingUser) => {
-		if (err) { return next(err); }
+	console.log("user-->", user); // roberto
+
+	User.findOne({ email: req.body.email }, (err: Error, existingUser) => {
+		if (err) {
+			return next(err);
+		}
 		if (existingUser) {
 			res.status(302).json({message: "user already exist", error: undefined, data: undefined});
 			return;

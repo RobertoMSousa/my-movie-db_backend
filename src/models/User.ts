@@ -1,16 +1,16 @@
 import * as bcrypt from "bcrypt-nodejs";
 import * as crypto from "crypto";
 import * as mongoose from "mongoose";
+import { debug } from "util";
+
 
 export type UserModel = mongoose.Document & {
 	email: string,
 	password: string,
 	passwordResetToken: string,
 	passwordResetExpires: Date,
-
 	facebook: string,
 	tokens: AuthToken[],
-
 	profile: {
 		name: string,
 		gender: string,
@@ -18,7 +18,6 @@ export type UserModel = mongoose.Document & {
 		website: string,
 		picture: string
 	},
-
 	comparePassword: (candidatePassword: string, cb: (err: any, isMatch: any) => {}) => void,
 	gravatar: (size: number) => string
 };
@@ -30,23 +29,41 @@ export type AuthToken = {
 
 const userSchema = new mongoose.Schema({
 	email: { type: String, unique: true },
-	password: String,
-	passwordResetToken: String,
-	passwordResetExpires: Date,
-
-	facebook: String,
-	twitter: String,
-	google: String,
+	password: {
+		type: String,
+		required: true
+	},
+	confirmed: {
+		type: Boolean,
+		default: false
+	},
+	createdAt: {
+		type: Date,
+		default: Date.now
+	},
+	deleted: {
+		type: Boolean,
+		default: false
+	},
+	deletedDate: {
+		type: Date
+	},
+	facebook: {
+		type: String
+	},
 	tokens: Array,
-
 	profile: {
 		name: String,
 		gender: String,
 		location: String,
 		website: String,
 		picture: String
+	},
+	passwordReset: {
+		Token: String,
+		Expires: Date
 	}
-}, { timestamps: true });
+});
 
 /**
  * Password hash middleware.
