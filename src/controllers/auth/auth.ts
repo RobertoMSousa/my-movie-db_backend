@@ -10,7 +10,6 @@ import { WriteError } from "mongodb";
 import { isEmail } from "validator";
 import { each } from "async";
 import { Error } from "mongoose";
-import * as moment from "moment";
 
 // mode
 import { default as User, UserModel, AuthToken } from "../../models/User";
