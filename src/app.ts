@@ -2,6 +2,7 @@ import * as express from "express";
 import * as compression from "compression";  // compresses requests
 import * as session from "express-session";
 import * as bodyParser from "body-parser";
+import * as cookieParser from "cookie-parser";
 import * as logger from "morgan";
 import * as lusca from "lusca";
 import * as dotenv from "dotenv";
@@ -22,6 +23,23 @@ dotenv.config({ path: ".env" });
 
 // Create Express server
 const app = express();
+
+
+const cors = require("cors");
+app.use(cookieParser());
+
+
+app.use(cors({
+	origin: "http://localhost:3000",
+	credentials: true
+}));
+
+// app.use(function(req, res, next) {
+// 	// res.header("Access-Control-Allow-Origin", "*");
+// 	res.header("Access-Control-Allow-Methods", "GET,HEAD,OPTIONS,POST,PUT");
+// 	res.header("Access-Control-Allow-Headers", "Access-Control-Allow-Headers, Cookie Origin,Accept, X-Requested-With, Content-Type, Access-Control-Request-Method, Access-Control-Request-Headers, Access-Control-Allow-Origin, Access-Control-Allow-Credentials");
+// 	next();
+// });
 
 // Connect to MongoDB
 const mongoUrl = process.env.MONGOLAB_URI;
@@ -52,9 +70,9 @@ app.use(session({
 }));
 app.use(passport.initialize());
 app.use(passport.session());
-app.use(flash());
-app.use(lusca.xframe("SAMEORIGIN"));
-app.use(lusca.xssProtection(true));
+// app.use(flash());
+// app.use(lusca.xframe("SAMEORIGIN"));
+// app.use(lusca.xssProtection(true));
 app.use((req, res, next) => {
 	res.locals.user = req.user;
 	next();
@@ -84,6 +102,7 @@ import apiRoutes = require("./controllers/api/api-routes");
 import contactRoutes = require("./controllers/contact/contact-routes");
 import userRoutes = require("./controllers/user/user-routes");
 import newsletterRoutes = require("./controllers/newsletter/newsletter-routes");
+import { read } from "fs";
 
 app.use("/", homeRoutes.Routes.home());
 app.use("/auth", authRoutes.Routes.auth());
