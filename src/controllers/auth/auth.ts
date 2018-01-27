@@ -23,17 +23,17 @@ import { default as User, UserModel, AuthToken } from "../../models/User";
 export const postLogin = (req: Request, res: Response, next: NextFunction) => {
 
 	if (!req.body.email) {
-		res.status(403).json({message: "no email provided", error: undefined, data: undefined});
+		res.status(206).json({message: "no email provided", error: undefined, data: undefined});
 		return;
 	}
 
 	if (!isEmail(req.body.email)) {
-		res.status(406).json({message: "email not valid", err: undefined, data: undefined});
+		res.status(206).json({message: "email not valid", err: undefined, data: undefined});
 		return;
 	}
 
 	if (!req.body.password) {
-		res.status(403).json({message: "no password provided", error: undefined, data: undefined});
+		res.status(206).json({message: "no password provided", error: undefined, data: undefined});
 		return;
 	}
 
@@ -43,15 +43,16 @@ export const postLogin = (req: Request, res: Response, next: NextFunction) => {
 			return;
 		}
 		if (!user) {
-			res.status(404).json({message: "email or password are wrong", error: undefined, data: undefined});
+			res.status(204).json({message: "email or password are wrong", error: undefined, data: undefined});
 			return;
 		}
+		console.log("user-->", user); // roberto
 		req.logIn(user, (err: Error) => {
 			if (err) {
 				res.status(500).json({message: undefined, error: err.message, data: undefined});
 				return;
 			}
-			res.status(200).json({message: "login with success", error: undefined, data: undefined});
+			res.status(200).json({message: "login with success", error: undefined, data: {_id: user._id, isAuthenticated: true}});
 			return;
 		});
 	})(req, res, next);
