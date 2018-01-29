@@ -47,6 +47,7 @@ export const postLogin = (req: Request, res: Response, next: NextFunction) => {
 			return;
 		}
 		console.log("user-->", user); // roberto
+		console.log("info-->", info); // roberto
 		req.logIn(user, (err: Error) => {
 			if (err) {
 				res.status(500).json({message: undefined, error: err.message, data: undefined});

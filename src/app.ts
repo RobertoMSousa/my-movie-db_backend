@@ -79,6 +79,7 @@ app.use((req, res, next) => {
 });
 app.use((req, res, next) => {
 	// After successful login, redirect back to the intended page
+	console.log("req.user-->", req.user); // roberto
 	if (!req.user &&
 		req.path !== "/auth/login" &&
 		req.path !== "/auth/signup" &&
