@@ -17,10 +17,12 @@ import { default as User, UserModel, AuthToken } from "../../models/User";
 
 
 /*
- *POST /login
+ *POST /auth/ogin
  *Sign in using email and password.
  */
 export const postLogin = (req: Request, res: Response, next: NextFunction) => {
+
+	console.log("postLogin-->", req.body); // roberto
 
 	if (!req.body.email) {
 		res.status(206).json({message: "no email provided", error: undefined, data: undefined});
@@ -43,11 +45,10 @@ export const postLogin = (req: Request, res: Response, next: NextFunction) => {
 			return;
 		}
 		if (!user) {
-			res.status(204).json({message: "email or password are wrong", error: undefined, data: undefined});
+			console.log("no user"); // roberto
+			res.status(404).json({message: "email or password are wrong", error: undefined, data: {_id: undefined, isAuthenticated: false}});
 			return;
 		}
-		console.log("user-->", user); // roberto
-		console.log("info-->", info); // roberto
 		req.logIn(user, (err: Error) => {
 			if (err) {
 				res.status(500).json({message: undefined, error: err.message, data: undefined});

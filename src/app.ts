@@ -34,15 +34,9 @@ app.use(cors({
 	credentials: true
 }));
 
-// app.use(function(req, res, next) {
-// 	// res.header("Access-Control-Allow-Origin", "*");
-// 	res.header("Access-Control-Allow-Methods", "GET,HEAD,OPTIONS,POST,PUT");
-// 	res.header("Access-Control-Allow-Headers", "Access-Control-Allow-Headers, Cookie Origin,Accept, X-Requested-With, Content-Type, Access-Control-Request-Method, Access-Control-Request-Headers, Access-Control-Allow-Origin, Access-Control-Allow-Credentials");
-// 	next();
-// });
-
 // Connect to MongoDB
 const mongoUrl = process.env.MONGOLAB_URI;
+
 (<any>mongoose).Promise = bluebird;
 mongoose.connect(mongoUrl, {useMongoClient: true}).then(
 	() => { /** ready to use. The `mongoose.connect()` promise resolves to undefined. */ },
@@ -70,16 +64,12 @@ app.use(session({
 }));
 app.use(passport.initialize());
 app.use(passport.session());
-// app.use(flash());
-// app.use(lusca.xframe("SAMEORIGIN"));
-// app.use(lusca.xssProtection(true));
 app.use((req, res, next) => {
 	res.locals.user = req.user;
 	next();
 });
 app.use((req, res, next) => {
 	// After successful login, redirect back to the intended page
-	console.log("req.user-->", req.user); // roberto
 	if (!req.user &&
 		req.path !== "/auth/login" &&
 		req.path !== "/auth/signup" &&
