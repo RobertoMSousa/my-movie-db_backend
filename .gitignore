@@ -12,6 +12,7 @@ pids
 logs
 results
 tmp
+/coverage
 
 #Build
 public/css/main.css
@@ -35,3 +36,4 @@ Thumbs.db
 
 # Ignore built ts files
 dist/**/*
+
