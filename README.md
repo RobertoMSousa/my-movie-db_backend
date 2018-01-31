@@ -68,8 +68,7 @@ Navigate to `http://localhost:8080`
 
 
 ## Testing
-For this project, I chose [Jest](https://facebook.github.io/jest/) as our test framework.
-While Mocha is probably more common, Mocha seems to be looking for a new maintainer and setting up TypeScript testing in Jest is wicked simple.
+To run the tests just run `yarn test` and it will run then and generate a report that can be checked here `my-movie-db_backend/coverage/lcov-report/index.html`
 
 ## Support
 Please [open an issue](https://github.com/RobertoMSousa/my-movie-db_backend/issues) for support.
