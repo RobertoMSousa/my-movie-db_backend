@@ -22,8 +22,6 @@ import { default as User, UserModel, AuthToken } from "../../models/User";
  */
 export const postLogin = (req: Request, res: Response, next: NextFunction) => {
 
-	console.log("postLogin-->", req.body); // roberto
-
 	if (!req.body.email) {
 		res.status(206).json({message: "no email provided", error: undefined, data: undefined});
 		return;
@@ -45,7 +43,6 @@ export const postLogin = (req: Request, res: Response, next: NextFunction) => {
 			return;
 		}
 		if (!user) {
-			console.log("no user"); // roberto
 			res.status(404).json({message: "email or password are wrong", error: undefined, data: {_id: undefined, isAuthenticated: false}});
 			return;
 		}
@@ -104,8 +101,6 @@ export const postSignup = (req: Request, res: Response, next: NextFunction) => {
 		email: req.body.email,
 		password: req.body.password
 	});
-
-	console.log("user-->", user); // roberto
 
 	User.findOne({ email: req.body.email }, (err: Error, existingUser) => {
 		if (err) {
