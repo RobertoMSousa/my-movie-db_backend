@@ -119,12 +119,6 @@ passport.use(new FacebookStrategy({
  * Login Required middleware.
  */
 export let isAuthenticated = (req: Request, res: Response, next: NextFunction) => {
-	// console.log("req-->", req); // roberto
-	console.log("req session-->", req.session); // roberto
-	console.log("req session id-->", req.sessionID); // roberto
-	console.log("isAuthenticated-->", req.isAuthenticated()); // roberto
-	// console.log("headers-->", req.headers); // roberto
-	// console.log("rawHeader-->", req.rawHeaders); // roberto
 	if (req.isAuthenticated()) {
 		return next();
 	}
