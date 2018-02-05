@@ -1,5 +1,9 @@
 import * as request from "supertest";
 import * as app from "../src/app";
+import * as mongo from "connect-mongo";
+
+import { default as User, UserModel, AuthToken } from "../src/models/User";
+import { Error } from "mongoose";
 
 const chai = require("chai");
 const expect = chai.expect;
