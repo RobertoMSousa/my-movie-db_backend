@@ -34,21 +34,27 @@ app.use(cors({
 	credentials: true
 }));
 
-// app.use(function(req, res, next) {
-// 	// res.header("Access-Control-Allow-Origin", "*");
-// 	res.header("Access-Control-Allow-Methods", "GET,HEAD,OPTIONS,POST,PUT");
-// 	res.header("Access-Control-Allow-Headers", "Access-Control-Allow-Headers, Cookie Origin,Accept, X-Requested-With, Content-Type, Access-Control-Request-Method, Access-Control-Request-Headers, Access-Control-Allow-Origin, Access-Control-Allow-Credentials");
-// 	next();
-// });
-
 // Connect to MongoDB
-const mongoUrl = process.env.MONGOLAB_URI;
+let mongoUrl: string = "";
+if (process.env.NODE_ENV === "test") {
+	mongoUrl = process.env.MONGODB_TEST_URL;
+}
+else {
+	mongoUrl = process.env.MONGOLAB_URI;
+}
+
+
+
+// connection(mongoUrl);
+
 (<any>mongoose).Promise = bluebird;
 mongoose.connect(mongoUrl, {useMongoClient: true}).then(
 	() => { /** ready to use. The `mongoose.connect()` promise resolves to undefined. */ },
 ).catch(err => {
-	console.log("MongoDB connection error. Please make sure MongoDB is running. " + err);
-	process.exit();
+	console.error("MongoDB connection error. Please make sure MongoDB is running. " + err);
+	if (process.env.NODE_ENV !== "test") {
+		process.exit();
+	}
 });
 
 // Express configuration
@@ -70,16 +76,12 @@ app.use(session({
 }));
 app.use(passport.initialize());
 app.use(passport.session());
-// app.use(flash());
-// app.use(lusca.xframe("SAMEORIGIN"));
-// app.use(lusca.xssProtection(true));
 app.use((req, res, next) => {
 	res.locals.user = req.user;
 	next();
 });
 app.use((req, res, next) => {
 	// After successful login, redirect back to the intended page
-	console.log("req.user-->", req.user); // roberto
 	if (!req.user &&
 		req.path !== "/auth/login" &&
 		req.path !== "/auth/signup" &&
@@ -97,19 +99,14 @@ app.use(express.static(path.join(__dirname, "public"), { maxAge: 31557600000 }))
 /**
  * Primary app routes.
  */
-import homeRoutes = require("./controllers/home/home-routes");
 import authRoutes = require("./controllers/auth/auth-routes");
-import apiRoutes = require("./controllers/api/api-routes");
-import contactRoutes = require("./controllers/contact/contact-routes");
 import userRoutes = require("./controllers/user/user-routes");
 import newsletterRoutes = require("./controllers/newsletter/newsletter-routes");
 import { read } from "fs";
 
-app.use("/", homeRoutes.Routes.home());
+
 app.use("/auth", authRoutes.Routes.auth());
 app.use("/newsletter", newsletterRoutes.Routes.index());
-app.use("/api", apiRoutes.Routes.api());
-app.use("/contact", contactRoutes.Routes.contact());
 app.use("/user", userRoutes.Routes.index());
 
 module.exports = app;
