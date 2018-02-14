@@ -43,10 +43,6 @@ else {
 	mongoUrl = process.env.MONGOLAB_URI;
 }
 
-
-
-// connection(mongoUrl);
-
 (<any>mongoose).Promise = bluebird;
 mongoose.connect(mongoUrl, {useMongoClient: true}).then(
 	() => { /** ready to use. The `mongoose.connect()` promise resolves to undefined. */ },
