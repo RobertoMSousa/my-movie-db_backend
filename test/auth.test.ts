@@ -2,20 +2,44 @@ import * as request from "supertest";
 import * as app from "../src/app";
 import * as mongo from "connect-mongo";
 
+
 import { default as User, UserModel, AuthToken } from "../src/models/User";
-import { Error } from "mongoose";
+import * as mongoose from "mongoose";
 
 const chai = require("chai");
 const expect = chai.expect;
 
+
+function createFakeUser(callback: (err: Error) => void): void {
+	request(app).post("/auth/signup")
+	.set("Accept", "application/json")
+	.send({
+		email: "placeholder@mail.com",
+		password: "123",
+		passwordRepeated: "123"
+	})
+	.expect(200)
+	.expect("Content-Type", /json/)
+	.end(function (err, res) {
+		if (err) {
+			callback(err);
+			return;
+		}
+		chai.expect(res.body.message).to.equal("account created");
+		callback(undefined);
+		return;
+	});
+}
+
 describe("Test the login route", () => {
 
 	beforeEach(() => {
-		console.log(""); // roberto
+		if (mongoose.connection && mongoose.connection.db) {
+			mongoose.connection.db.dropDatabase();
+		}
 	});
 
 	it("should return 206 and the no email provided message", (done) => {
-
 		request(app).post("/auth/login")
 			.set("Accept", "application/json")
 			.send({})
@@ -26,14 +50,13 @@ describe("Test the login route", () => {
 					done(err);
 					return;
 				}
-				console.log("res-->", res.body); // roberto
 				chai.expect(res.body.message).to.equal("no email provided");
 				done();
 				return;
 			});
 	});
 
-	it("should return 206 and the no not valid email messge", (done) => {
+	it("should return 206 and the no not valid email message", (done) => {
 		request(app).post("/auth/login")
 			.set("Accept", "application/json")
 			.send({
@@ -46,7 +69,6 @@ describe("Test the login route", () => {
 					done(err);
 					return;
 				}
-				console.log("res-->", res.body); // roberto
 				chai.expect(res.body.message).to.equal("email not valid");
 				done();
 				return;
@@ -66,7 +88,6 @@ describe("Test the login route", () => {
 					done(err);
 					return;
 				}
-				console.log("res-->", res.body); // roberto
 				chai.expect(res.body.message).to.equal("no password provided");
 				done();
 				return;
@@ -87,7 +108,6 @@ describe("Test the login route", () => {
 					done(err);
 					return;
 				}
-				console.log("res-->", res.body); // roberto
 				chai.expect(res.body.message).to.equal("email or password are wrong");
 				done();
 				return;
@@ -95,7 +115,8 @@ describe("Test the login route", () => {
 	});
 
 	it("should bet able to get success message on login", (done) => {
-		request(app).post("/auth/login")
+		createFakeUser((err: Error) => {
+			request(app).post("/auth/login")
 			.set("Accept", "application/json")
 			.send({
 				"email": "placeholder@mail.com",
@@ -108,18 +129,31 @@ describe("Test the login route", () => {
 					done(err);
 					return;
 				}
-				console.log("res-->", res.body); // roberto
 				chai.expect(res.body.message).to.equal("login with success");
 				done();
 				return;
 			});
+		});
 	});
 
 });
 
-describe("Test the login route", () => {
+describe("Test the logout route", () => {
+
+	beforeEach(() => {
+		if (mongoose.connection && mongoose.connection.db) {
+			mongoose.connection.db.dropDatabase();
+		}
+	});
+
+
 	it("should bet able to login and logout right after", (done) => {
-		request(app).post("/auth/login")
+		createFakeUser((err: Error) => {
+			if (err) {
+				done(err);
+				return;
+			}
+			request(app).post("/auth/login")
 			.set("Accept", "application/json")
 			.send({
 				"email": "placeholder@mail.com",
@@ -132,7 +166,6 @@ describe("Test the login route", () => {
 					done(err);
 					return;
 				}
-				console.log("res-->", res.body); // roberto
 				chai.expect(res.body.message).to.equal("login with success");
 				request(app).get("/auth/logout")
 					.set("Accept", "application/json")
@@ -146,14 +179,21 @@ describe("Test the login route", () => {
 						chai.expect(res.body.message).to.equal("logout success");
 						done();
 						return;
-					});§
+					});
 			});
+		});
 	});
 });
 
-describe.skip("GET /auth/signup", () => {
+describe("GET /auth/signup", () => {
+
+	beforeEach(() => {
+		if (mongoose.connection && mongoose.connection.db) {
+			mongoose.connection.db.dropDatabase();
+		}
+	});
+
 	it("should return 403 and the no email provided message", (done) => {
-		console.log("sample"); // roberto
 		request(app).post("/auth/signup")
 			.set("Accept", "application/json")
 			.send({})
@@ -164,7 +204,6 @@ describe.skip("GET /auth/signup", () => {
 					done(err);
 					return;
 				}
-				console.log("res-->", res.body); // roberto
 				chai.expect(res.body.message).to.equal("no email provided");
 				done();
 				return;
@@ -172,7 +211,6 @@ describe.skip("GET /auth/signup", () => {
 	});
 
 	it("should return 500 and the not valid email message", (done) => {
-		console.log("sample"); // roberto
 		request(app).post("/auth/signup")
 			.set("Accept", "application/json")
 			.send({
@@ -185,7 +223,6 @@ describe.skip("GET /auth/signup", () => {
 					done(err);
 					return;
 				}
-				console.log("res-->", res.body); // roberto
 				chai.expect(res.body.message).to.equal("email not valid");
 				done();
 				return;
@@ -193,7 +230,6 @@ describe.skip("GET /auth/signup", () => {
 	});
 
 	it("should return 403 if not password provided", (done) => {
-		console.log("sample"); // roberto
 		request(app).post("/auth/signup")
 			.set("Accept", "application/json")
 			.send({
@@ -207,7 +243,6 @@ describe.skip("GET /auth/signup", () => {
 					done(err);
 					return;
 				}
-				console.log("res-->", res.body); // roberto
 				chai.expect(res.body.message).to.equal("no password provided");
 				done();
 				return;
@@ -215,7 +250,6 @@ describe.skip("GET /auth/signup", () => {
 	});
 
 	it("should return 403 if not reapeated password provided provided", (done) => {
-		console.log("sample"); // roberto
 		request(app).post("/auth/signup")
 			.set("Accept", "application/json")
 			.send({
@@ -229,7 +263,6 @@ describe.skip("GET /auth/signup", () => {
 					done(err);
 					return;
 				}
-				console.log("res-->", res.body); // roberto
 				chai.expect(res.body.message).to.equal("no password provided");
 				done();
 				return;
@@ -238,7 +271,6 @@ describe.skip("GET /auth/signup", () => {
 
 
 	it("should return 500 if not password and repeated password don't match", (done) => {
-		console.log("sample"); // roberto
 		request(app).post("/auth/signup")
 			.set("Accept", "application/json")
 			.send({
@@ -253,24 +285,32 @@ describe.skip("GET /auth/signup", () => {
 					done(err);
 					return;
 				}
-				console.log("res-->", res.body); // roberto
 				chai.expect(res.body.message).to.equal("passwords don't match");
 				done();
 				return;
 			});
 	});
+
+	it("should not be able to create an account for a user that already exists", (done) => {
+		createFakeUser((err: Error) => {
+			request(app).post("/auth/signup")
+			.set("Accept", "application/json")
+			.send({
+				"email": "placeholder@mail.com",
+				"password": "123",
+				"passwordRepeated": "123"
+			})
+			.expect(302)
+			.expect("Content-Type", /json/)
+			.end(function (err, res) {
+				if (err) {
+					done(err);
+					return;
+				}
+				chai.expect(res.body.message).to.equal("user already exist");
+				done();
+				return;
+			});
+		});
+	});
 });
-
-
-// describe("POST /login", () => {
-// 	it("should return some defined error message with valid parameters", (done) => {
-// 		return request(app).post("/auth/login")
-// 			.field("email", "john@me.com")
-// 			.field("password", "Hunter2")
-// 			.expect(302)
-// 			.end(function(err, res) {
-// 				expect(res.error).not.to.be.undefined;
-// 				done();
-// 			});
-// 	});
-// });
