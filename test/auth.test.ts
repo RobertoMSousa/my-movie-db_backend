@@ -1,6 +1,7 @@
 import * as request from "supertest";
 import * as app from "../src/app";
 import * as mongo from "connect-mongo";
+import * as crypto from "crypto";
 
 
 import { default as User, UserModel, AuthToken } from "../src/models/User";
@@ -33,7 +34,17 @@ function createFakeUser(callback: (err: Error) => void): void {
 
 describe("Test the login route", () => {
 
+	/*
+	clean up the test db before and after the
+	test just to be sure that the tests are really
+	independent from each others
+	*/
 	beforeEach(() => {
+		if (mongoose.connection && mongoose.connection.db) {
+			mongoose.connection.db.dropDatabase();
+		}
+	});
+	afterAll(() => {
 		if (mongoose.connection && mongoose.connection.db) {
 			mongoose.connection.db.dropDatabase();
 		}
@@ -140,7 +151,17 @@ describe("Test the login route", () => {
 
 describe("Test the logout route", () => {
 
+	/*
+	clean up the test db before and after the
+	test just to be sure that the tests are really
+	independent from each others
+	*/
 	beforeEach(() => {
+		if (mongoose.connection && mongoose.connection.db) {
+			mongoose.connection.db.dropDatabase();
+		}
+	});
+	afterAll(() => {
 		if (mongoose.connection && mongoose.connection.db) {
 			mongoose.connection.db.dropDatabase();
 		}
@@ -148,6 +169,7 @@ describe("Test the logout route", () => {
 
 
 	it("should bet able to login and logout right after", (done) => {
+		const md5: string = crypto.createHash("md5").update("placeholder@mail.com").digest("hex");
 		createFakeUser((err: Error) => {
 			if (err) {
 				done(err);
@@ -167,6 +189,11 @@ describe("Test the logout route", () => {
 					return;
 				}
 				chai.expect(res.body.message).to.equal("login with success");
+				chai.expect(res.body.data).to.exist;
+				chai.expect(res.body.data.email).to.equal("placeholder@mail.com");
+				chai.expect(res.body.data.gravatar).to.exist;
+				// chai.expect(res.body.data.gravatar).to.equal();
+				chai.expect(res.body.data.gravatar).to.equal(`https://gravatar.com/avatar/${md5}?s=200&d=retro`);
 				request(app).get("/auth/logout")
 					.set("Accept", "application/json")
 					.expect(200)
@@ -187,7 +214,17 @@ describe("Test the logout route", () => {
 
 describe("GET /auth/signup", () => {
 
+	/*
+	clean up the test db before and after the
+	test just to be sure that the tests are really
+	independent from each others
+	*/
 	beforeEach(() => {
+		if (mongoose.connection && mongoose.connection.db) {
+			mongoose.connection.db.dropDatabase();
+		}
+	});
+	afterAll(() => {
 		if (mongoose.connection && mongoose.connection.db) {
 			mongoose.connection.db.dropDatabase();
 		}
@@ -312,5 +349,31 @@ describe("GET /auth/signup", () => {
 				return;
 			});
 		});
+	});
+
+	it("should be able to create the new user", (done) => {
+		const md5: string = crypto.createHash("md5").update("placeholder@mail.com").digest("hex");
+		request(app).post("/auth/signup")
+			.set("Accept", "application/json")
+			.send({
+				"email": "placeholder@mail.com",
+				"password": "123",
+				"passwordRepeated": "123"
+			})
+			.expect(200)
+			.expect("Content-Type", /json/)
+			.end(function (err, res) {
+				if (err) {
+					done(err);
+					return;
+				}
+				chai.expect(res.body.message).to.equal("account created");
+				chai.expect(res.body.data).to.exist;
+				chai.expect(res.body.data.email).to.equal("placeholder@mail.com");
+				chai.expect(res.body.data.gravatar).to.exist;
+				chai.expect(res.body.data.gravatar).to.equal(`https://gravatar.com/avatar/${md5}?s=200&d=retro`);
+				done();
+				return;
+			});
 	});
 });
