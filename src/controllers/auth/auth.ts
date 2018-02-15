@@ -12,7 +12,7 @@ import { each } from "async";
 import { Error } from "mongoose";
 
 // mode
-import { default as User, UserModel, AuthToken } from "../../models/User";
+import { default as User, UserModel, AuthToken, userSalt } from "../../models/User";
 
 
 
@@ -51,7 +51,7 @@ export const postLogin = (req: Request, res: Response, next: NextFunction) => {
 				res.status(500).json({message: undefined, error: err.message, data: undefined});
 				return;
 			}
-			res.status(200).json({message: "login with success", error: undefined, data: {_id: user._id, isAuthenticated: true}});
+			res.status(200).json({message: "login with success", error: undefined, data: userSalt(user) });
 			return;
 		});
 	})(req, res, next);
@@ -67,7 +67,6 @@ export const logout = (req: Request, res: Response) => {
 	req.logout();
 	res.status(200).json({message: "logout success", error: undefined, data: undefined});
 	return;
-	// res.redirect("/");
 };
 
 /**
@@ -97,9 +96,13 @@ export const postSignup = (req: Request, res: Response, next: NextFunction) => {
 		return;
 	}
 
+	// build the gravatar md5 hash
+	const md5: string = crypto.createHash("md5").update(req.body.email).digest("hex");
+
 	const user = new User({
 		email: req.body.email,
-		password: req.body.password
+		password: req.body.password,
+		gravatar: `https://gravatar.com/avatar/${md5}?s=200&d=retro`
 	});
 
 	User.findOne({ email: req.body.email }, (err: Error, existingUser) => {
@@ -119,7 +122,7 @@ export const postSignup = (req: Request, res: Response, next: NextFunction) => {
 					res.status(500).json({message: undefined, error: err.message, data: undefined});
 					return;
 				}
-				res.status(200).json({message: "account created", error: undefined, data: undefined});
+				res.status(200).json({message: "account created", error: undefined, data: userSalt(<UserModel> user) });
 				return;
 			});
 		});
