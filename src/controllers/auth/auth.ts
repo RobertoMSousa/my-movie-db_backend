@@ -12,7 +12,7 @@ import { each } from "async";
 import { Error } from "mongoose";
 
 // mode
-import { default as User, UserModel, AuthToken } from "../../models/User";
+import { default as User, UserModel, AuthToken, userSalt } from "../../models/User";
 
 
 
@@ -36,7 +36,6 @@ export const postLogin = (req: Request, res: Response, next: NextFunction) => {
 		res.status(206).json({message: "no password provided", error: undefined, data: undefined});
 		return;
 	}
-	console.log("login body-->", req.body); // roberto
 
 	passport.authenticate("local", (err: Error, user: UserModel, info: IVerifyOptions) => {
 		if (err) {
@@ -52,7 +51,7 @@ export const postLogin = (req: Request, res: Response, next: NextFunction) => {
 				res.status(500).json({message: undefined, error: err.message, data: undefined});
 				return;
 			}
-			res.status(200).json({message: "login with success", error: undefined, data: {_id: user._id, isAuthenticated: true}});
+			res.status(200).json({message: "login with success", error: undefined, data: userSalt(user) });
 			return;
 		});
 	})(req, res, next);
@@ -79,8 +78,6 @@ export const logout = (req: Request, res: Response) => {
  * passwordRepeated -> string
  */
 export const postSignup = (req: Request, res: Response, next: NextFunction) => {
-
-	console.log("req body-->", req.body); // roberto
 
 	if (!req.body.email) {
 		res.status(403).json({message: "no email provided", error: undefined, data: undefined});
@@ -120,13 +117,12 @@ export const postSignup = (req: Request, res: Response, next: NextFunction) => {
 			if (err) {
 				return next(err);
 			}
-			console.log("user on new account created-->", user); // roberto
 			req.logIn(user, (err: Error) => {
 				if (err) {
 					res.status(500).json({message: undefined, error: err.message, data: undefined});
 					return;
 				}
-				res.status(200).json({message: "account created", error: undefined, data: user});
+				res.status(200).json({message: "account created", error: undefined, data: userSalt(<UserModel> user) });
 				return;
 			});
 		});
