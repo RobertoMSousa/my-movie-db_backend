@@ -36,6 +36,7 @@ export const postLogin = (req: Request, res: Response, next: NextFunction) => {
 		res.status(206).json({message: "no password provided", error: undefined, data: undefined});
 		return;
 	}
+	console.log("login body-->", req.body); // roberto
 
 	passport.authenticate("local", (err: Error, user: UserModel, info: IVerifyOptions) => {
 		if (err) {
@@ -67,7 +68,6 @@ export const logout = (req: Request, res: Response) => {
 	req.logout();
 	res.status(200).json({message: "logout success", error: undefined, data: undefined});
 	return;
-	// res.redirect("/");
 };
 
 /**
@@ -79,6 +79,8 @@ export const logout = (req: Request, res: Response) => {
  * passwordRepeated -> string
  */
 export const postSignup = (req: Request, res: Response, next: NextFunction) => {
+
+	console.log("req body-->", req.body); // roberto
 
 	if (!req.body.email) {
 		res.status(403).json({message: "no email provided", error: undefined, data: undefined});
@@ -97,9 +99,13 @@ export const postSignup = (req: Request, res: Response, next: NextFunction) => {
 		return;
 	}
 
+	// build the gravatar md5 hash
+	const md5: string = crypto.createHash("md5").update(req.body.email).digest("hex");
+
 	const user = new User({
 		email: req.body.email,
-		password: req.body.password
+		password: req.body.password,
+		gravatar: `https://gravatar.com/avatar/${md5}?s=200&d=retro`
 	});
 
 	User.findOne({ email: req.body.email }, (err: Error, existingUser) => {
@@ -114,12 +120,13 @@ export const postSignup = (req: Request, res: Response, next: NextFunction) => {
 			if (err) {
 				return next(err);
 			}
+			console.log("user on new account created-->", user); // roberto
 			req.logIn(user, (err: Error) => {
 				if (err) {
 					res.status(500).json({message: undefined, error: err.message, data: undefined});
 					return;
 				}
-				res.status(200).json({message: "account created", error: undefined, data: undefined});
+				res.status(200).json({message: "account created", error: undefined, data: user});
 				return;
 			});
 		});
