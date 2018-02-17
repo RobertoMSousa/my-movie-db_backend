@@ -36,7 +36,8 @@ export type saltedUser = {
 	_id: mongoose.Types.ObjectId,
 	email: string,
 	avatar: string,
-	gravatar: string
+	gravatar: string,
+	isAuthenticated: boolean
 };
 
 /*Mongo Schema*/
@@ -86,7 +87,7 @@ const userSchema = new mongoose.Schema({
 function that salt the user to avoid returning the sensive data
 */
 export function userSalt(user: UserModel): saltedUser {
-	return {_id: user._id, email: user.email, avatar: user.avatar, gravatar: user.gravatar};
+	return {_id: user._id, email: user.email, avatar: user.avatar, gravatar: user.gravatar, isAuthenticated: true};
 }
 
 /**
