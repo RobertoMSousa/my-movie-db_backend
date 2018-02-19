@@ -29,10 +29,11 @@ const cors = require("cors");
 app.use(cookieParser());
 
 
+app.options("*", cors()); // include before other routes
+
 
 app.use(cors({
-	origin: false,
-	// origin: ["http://localhost:3000", "https://my-movie-db-roberto.herokuapp.com"],
+	origin: ["http://localhost:3000", "https://my-movie-db-roberto.herokuapp.com"],
 	credentials: true,
 	methods: "GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS",
 }));
