@@ -15,20 +15,20 @@ export namespace Routes {
 		router.route("/signup")
 			.post(authCtrl.postSignup);
 
-		router.route("/forgot")
-			.get(authCtrl.getForgot)
-			.post(authCtrl.postForgot);
+		// router.route("/forgot")
+		// 	.get(authCtrl.getForgot)
+		// 	.post(authCtrl.postForgot);
 
-		router.route("/reset/:token")
-			.get(authCtrl.getReset)
-			.post(authCtrl.postReset);
+		// router.route("/reset/:token")
+		// 	.get(authCtrl.getReset)
+		// 	.post(authCtrl.postReset);
 
 
-		router.route("/facebook")
-			.get(passport.authenticate("facebook", { scope: ["email", "public_profile"] }));
+		// router.route("/facebook")
+		// 	.get(passport.authenticate("facebook", { scope: ["email", "public_profile"] }));
 
-		router.route("/facebook/callback")
-			.get(passport.authenticate("facebook", { failureRedirect: "/login" }), authCtrl.facebookCallback);
+		// router.route("/facebook/callback")
+		// 	.get(passport.authenticate("facebook", { failureRedirect: "/login" }), authCtrl.facebookCallback);
 
 		return router;
 	}
