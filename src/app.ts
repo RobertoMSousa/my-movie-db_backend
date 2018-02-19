@@ -29,11 +29,11 @@ const cors = require("cors");
 app.use(cookieParser());
 
 
-app.options("*", cors({
-	origin: ["http://localhost:3000", "https://my-movie-db-roberto.herokuapp.com"],
-	credentials: true,
-	methods: "GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS",
-}));
+// app.options("*", cors({
+// 	origin: ["http://localhost:3000", "https://my-movie-db-roberto.herokuapp.com"],
+// 	credentials: true,
+// 	methods: "GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS",
+// }));
 
 
 app.use(cors({
