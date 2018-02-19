@@ -29,9 +29,11 @@ const cors = require("cors");
 app.use(cookieParser());
 
 
+
 app.use(cors({
 	origin: ["*", "http://localhost:3000"],
-	credentials: true
+	credentials: true,
+	methods: "GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS",
 }));
 
 // Connect to MongoDB
