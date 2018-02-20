@@ -31,10 +31,10 @@ app.use(cookieParser());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
-app.use(cors({
-	origin: "*",
-	credentials: true
-}));
+// app.use(cors({
+// 	origin: "*",
+// 	credentials: true
+// }));
 
 // Connect to MongoDB
 let mongoUrl: string = "";
