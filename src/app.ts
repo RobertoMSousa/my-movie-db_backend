@@ -32,16 +32,16 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
 
-const corsUrls = ["*"];
-// corsUrls = ['http://example.com', 'https://example.com'] or ['*']
-app.use(
-	cors({
-		origin: function(origin, callback) {
-			callback(undefined, true);
-		},
-		credentials: true
-	})
-);
+// app.use(
+// 	cors({
+// 		origin: function(origin, callback) {
+// 			callback(undefined, "*");
+// 		},
+// 		credentials: true
+// 	})
+// );
+
+app.use(cors());
 
 // app.use(cors({
 // 	origin: function(origin, callback) {
