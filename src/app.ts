@@ -28,13 +28,34 @@ const cors = require("cors");
 
 app.use(cookieParser());
 
+/**
+ * Setup CORS
+ */
+const whitelist = ["http://localhost:3000", /my-movie-db-roberto\.herokuapp\.com$/];
 
-app.use(cors({
-	// origin: ["http://localhost:3000"],
-	origin: true,
-	credentials: true,
-	methods: ["GET", "HEAD", "PUT", "PATCH", "POST", "DELETE", "OPTIONS"]
-}));
+const  corsOptions = function(req, callback) {
+	let corsOptions;
+	const origin = req.header("Origin");
+	console.log("Origin: ", origin); // roberto
+
+	const originIsWhitelisted = whitelist.indexOf(origin) !== -1;
+
+	if (originIsWhitelisted) {
+		corsOptions = { origin: true, credentials: true }; // reflect (enable) the requested origin in the CORS response
+	} else {
+		corsOptions = { origin: false, credentials: true }; // disable CORS for this request
+	}
+	callback(originIsWhitelisted ? undefined : new Error("WARNING: CORS Origin Not Allowed"), corsOptions); // callback expects two parameters: error and options
+};
+
+app.use(cors(corsOptions));
+
+// app.use(cors({
+// 	// origin: ["http://localhost:3000"],
+// 	origin: true,
+// 	credentials: true,
+// 	methods: ["GET", "HEAD", "PUT", "PATCH", "POST", "DELETE", "OPTIONS"]
+// }));
 
 // Connect to MongoDB
 let mongoUrl: string = "";
