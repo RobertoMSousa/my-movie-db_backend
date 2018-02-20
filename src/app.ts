@@ -12,6 +12,7 @@ import * as path from "path";
 import * as mongoose from "mongoose";
 import * as passport from "passport";
 import * as bluebird from "bluebird";
+import * as cors from "cors";
 
 
 const MongoStore = mongo(session);
@@ -23,7 +24,7 @@ dotenv.config({ path: ".env" });
 
 // Create Express server
 const app = express();
-const cors = require("cors");
+// const cors = require("cors");
 
 
 app.use(cookieParser());
@@ -41,7 +42,7 @@ app.use(bodyParser.urlencoded({ extended: true }));
 // 	})
 // );
 
-app.use(cors());
+// app.use(cors());
 
 // app.use(cors({
 // 	origin: function(origin, callback) {
@@ -49,6 +50,17 @@ app.use(cors());
 // 	},
 // 	credentials: true
 // }));
+
+// options for cors midddleware
+// const options: cors.CorsOptions = {
+// 	allowedHeaders: ["Origin", "X-Requested-With", "Content-Type", "Accept", "X-Access-Token"],
+// 	credentials: true,
+// 	methods: "GET,HEAD,OPTIONS,PUT,PATCH,POST,DELETE",
+// 	origin: "*"
+// };
+
+// // use cors middleware
+// app.use(cors(options));
 
 // Connect to MongoDB
 let mongoUrl: string = "";
@@ -119,9 +131,16 @@ import userRoutes = require("./controllers/user/user-routes");
 import newsletterRoutes = require("./controllers/newsletter/newsletter-routes");
 import { read } from "fs";
 
+app.use(cors({
+	origin: true,
+	credentials: true,
+	methods: "GET,HEAD,OPTIONS,PUT,PATCH,POST,DELETE"
+}));
 
+// add your routes
 app.use("/auth", authRoutes.Routes.auth());
 app.use("/newsletter", newsletterRoutes.Routes.index());
 app.use("/user", userRoutes.Routes.index());
+
 
 module.exports = app;
