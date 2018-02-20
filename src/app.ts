@@ -28,34 +28,36 @@ const cors = require("cors");
 
 app.use(cookieParser());
 
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: true }));
+
 /**
  * Setup CORS
  */
-const whitelist = ["http://localhost:3000", /my-movie-db-roberto\.herokuapp\.com$/];
 
-const  corsOptions = function(req, callback) {
-	let corsOptions;
-	const origin = req.header("Origin");
-	console.log("Origin: ", origin); // roberto
+// const whitelist = ["http://localhost:3000", /my-movie-db-roberto\.herokuapp\.com$/];
 
-	const originIsWhitelisted = whitelist.indexOf(origin) !== -1;
+// const  corsOptions = function(req, callback) {
+// 	let corsOptions;
+// 	const origin = req.header("Origin");
+// 	console.log("Origin: ", origin); // roberto
 
-	if (originIsWhitelisted) {
-		corsOptions = { origin: true, credentials: true }; // reflect (enable) the requested origin in the CORS response
-	} else {
-		corsOptions = { origin: false, credentials: true }; // disable CORS for this request
-	}
-	callback(originIsWhitelisted ? undefined : new Error("WARNING: CORS Origin Not Allowed"), corsOptions); // callback expects two parameters: error and options
-};
+// 	const originIsWhitelisted = whitelist.indexOf(origin) !== -1;
 
-app.use(cors(corsOptions));
+// 	if (originIsWhitelisted) {
+// 		corsOptions = { origin: true, credentials: true }; // reflect (enable) the requested origin in the CORS response
+// 	} else {
+// 		corsOptions = { origin: false, credentials: true }; // disable CORS for this request
+// 	}
+// 	callback(originIsWhitelisted ? undefined : new Error("WARNING: CORS Origin Not Allowed"), corsOptions); // callback expects two parameters: error and options
+// };
 
-// app.use(cors({
-// 	// origin: ["http://localhost:3000"],
-// 	origin: true,
-// 	credentials: true,
-// 	methods: ["GET", "HEAD", "PUT", "PATCH", "POST", "DELETE", "OPTIONS"]
-// }));
+// app.use(cors(corsOptions));
+
+app.use(cors({
+	origin: true,
+	credentials: true
+}));
 
 // Connect to MongoDB
 let mongoUrl: string = "";
@@ -80,10 +82,10 @@ mongoose.connect(mongoUrl, {useMongoClient: true}).then(
 app.set("port", process.env.PORT || 3000);
 app.set("views", path.join(__dirname, "../views"));
 app.set("view engine", "pug");
+
 app.use(compression());
 app.use(logger("dev"));
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: true }));
+
 app.use(session({
 	resave: true,
 	saveUninitialized: true,
@@ -93,12 +95,14 @@ app.use(session({
 		autoReconnect: true
 	})
 }));
+
 app.use(passport.initialize());
 app.use(passport.session());
 app.use((req, res, next) => {
 	res.locals.user = req.user;
 	next();
 });
+
 app.use((req, res, next) => {
 	// After successful login, redirect back to the intended page
 	if (!req.user &&
@@ -108,11 +112,12 @@ app.use((req, res, next) => {
 		!req.path.match(/\./)) {
 		req.session.returnTo = req.path;
 	} else if (req.user &&
-		req.path == "/user/account") {
+		req.path == "/user/profile") {
 		req.session.returnTo = req.path;
 	}
 	next();
 });
+
 app.use(express.static(path.join(__dirname, "public"), { maxAge: 31557600000 }));
 
 /**
