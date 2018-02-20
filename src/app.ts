@@ -23,19 +23,17 @@ dotenv.config({ path: ".env" });
 
 // Create Express server
 const app = express();
-// const cors = require("cors");
+const cors = require("cors");
 
 
 app.use(cookieParser());
 
 
-// if (process.env.NODE_ENV === "developement") {
-// 	app.use(cors({
-// 		origin: ["http://localhost:3000", "my-movie-db-roberto.herokuapp.com"],
-// 		credentials: true,
-// 		methods: "GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS",
-// 	}));
-// }
+app.use(cors({
+	origin: ["http://localhost:3000", "/\my-movie-db-roberto\.herokuapp\.com$/"],
+	credentials: true,
+	methods: "GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS",
+}));
 
 // Connect to MongoDB
 let mongoUrl: string = "";
