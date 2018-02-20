@@ -31,31 +31,8 @@ app.use(cookieParser());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
-/**
- * Setup CORS
- */
-
-// const whitelist = ["http://localhost:3000", /my-movie-db-roberto\.herokuapp\.com$/];
-
-// const  corsOptions = function(req, callback) {
-// 	let corsOptions;
-// 	const origin = req.header("Origin");
-// 	console.log("Origin: ", origin); // roberto
-
-// 	const originIsWhitelisted = whitelist.indexOf(origin) !== -1;
-
-// 	if (originIsWhitelisted) {
-// 		corsOptions = { origin: true, credentials: true }; // reflect (enable) the requested origin in the CORS response
-// 	} else {
-// 		corsOptions = { origin: false, credentials: true }; // disable CORS for this request
-// 	}
-// 	callback(originIsWhitelisted ? undefined : new Error("WARNING: CORS Origin Not Allowed"), corsOptions); // callback expects two parameters: error and options
-// };
-
-// app.use(cors(corsOptions));
-
 app.use(cors({
-	origin: true,
+	origin: "*",
 	credentials: true
 }));
 
