@@ -30,7 +30,7 @@ app.use(cookieParser());
 
 
 app.use(cors({
-	origin: ["http://localhost:3000", "https://my-movie-db-roberto.herokuapp.com"],
+	origin: "http://localhost:3000",
 	credentials: true,
 	methods: "GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS",
 }));
