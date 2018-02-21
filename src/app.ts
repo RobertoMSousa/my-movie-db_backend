@@ -143,6 +143,11 @@ app.use("/newsletter", newsletterRoutes.Routes.index());
 app.use("/user", userRoutes.Routes.index());
 
 // enabling pre-flight
-app.options("*", cors());
+app.options("*", cors({
+	origin: true,
+	credentials: true,
+	methods: "GET,HEAD,OPTIONS,PUT,PATCH,POST,DELETE"
+	})
+);
 
 module.exports = app;
