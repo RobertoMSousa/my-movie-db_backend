@@ -24,43 +24,12 @@ dotenv.config({ path: ".env" });
 
 // Create Express server
 const app = express();
-// const cors = require("cors");
 
 
 app.use(cookieParser());
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
-
-
-// app.use(
-// 	cors({
-// 		origin: function(origin, callback) {
-// 			callback(undefined, "*");
-// 		},
-// 		credentials: true
-// 	})
-// );
-
-// app.use(cors());
-
-// app.use(cors({
-// 	origin: function(origin, callback) {
-// 		callback(undefined, true);
-// 	},
-// 	credentials: true
-// }));
-
-// options for cors midddleware
-// const options: cors.CorsOptions = {
-// 	allowedHeaders: ["Origin", "X-Requested-With", "Content-Type", "Accept", "X-Access-Token"],
-// 	credentials: true,
-// 	methods: "GET,HEAD,OPTIONS,PUT,PATCH,POST,DELETE",
-// 	origin: "*"
-// };
-
-// // use cors middleware
-// app.use(cors(options));
 
 // Connect to MongoDB
 let mongoUrl: string = "";
@@ -131,11 +100,14 @@ import userRoutes = require("./controllers/user/user-routes");
 import newsletterRoutes = require("./controllers/newsletter/newsletter-routes");
 import { read } from "fs";
 
-app.use(cors({
-	origin: true,
+
+const corsConfig: cors.CorsOptions = {
+	origin: ["https://my-movie-db-roberto.herokuapp.com", "http://localhost:3000"],
 	credentials: true,
 	methods: "GET,HEAD,OPTIONS,PUT,PATCH,POST,DELETE"
-}));
+};
+
+app.use(cors(corsConfig));
 
 // add your routes
 app.use("/auth", authRoutes.Routes.auth());
@@ -143,11 +115,6 @@ app.use("/newsletter", newsletterRoutes.Routes.index());
 app.use("/user", userRoutes.Routes.index());
 
 // enabling pre-flight
-app.options("*", cors({
-	origin: true,
-	credentials: true,
-	methods: "GET,HEAD,OPTIONS,PUT,PATCH,POST,DELETE"
-	})
-);
+app.options("*", cors(corsConfig));
 
 module.exports = app;
