@@ -95,6 +95,7 @@ app.use(express.static(path.join(__dirname, "public"), { maxAge: 31557600000 }))
 /**
  * Primary app routes.
  */
+import homeRoutes = require("./controllers/home/home-routes");
 import authRoutes = require("./controllers/auth/auth-routes");
 import userRoutes = require("./controllers/user/user-routes");
 import newsletterRoutes = require("./controllers/newsletter/newsletter-routes");
@@ -110,6 +111,7 @@ const corsConfig: cors.CorsOptions = {
 app.use(cors(corsConfig));
 
 // add your routes
+app.use("/", homeRoutes.Routes.home());
 app.use("/auth", authRoutes.Routes.auth());
 app.use("/newsletter", newsletterRoutes.Routes.index());
 app.use("/user", userRoutes.Routes.index());
