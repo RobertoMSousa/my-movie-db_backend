@@ -12,6 +12,7 @@ import * as path from "path";
 import * as mongoose from "mongoose";
 import * as passport from "passport";
 import * as bluebird from "bluebird";
+import * as cors from "cors";
 
 
 const MongoStore = mongo(session);
@@ -25,16 +26,10 @@ dotenv.config({ path: ".env" });
 const app = express();
 
 
-const cors = require("cors");
 app.use(cookieParser());
 
-
-
-app.use(cors({
-	origin: ["*", "http://localhost:3000"],
-	credentials: true,
-	methods: "GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS",
-}));
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: true }));
 
 // Connect to MongoDB
 let mongoUrl: string = "";
@@ -59,10 +54,10 @@ mongoose.connect(mongoUrl, {useMongoClient: true}).then(
 app.set("port", process.env.PORT || 3000);
 app.set("views", path.join(__dirname, "../views"));
 app.set("view engine", "pug");
+
 app.use(compression());
 app.use(logger("dev"));
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: true }));
+
 app.use(session({
 	resave: true,
 	saveUninitialized: true,
@@ -72,12 +67,14 @@ app.use(session({
 		autoReconnect: true
 	})
 }));
+
 app.use(passport.initialize());
 app.use(passport.session());
 app.use((req, res, next) => {
 	res.locals.user = req.user;
 	next();
 });
+
 app.use((req, res, next) => {
 	// After successful login, redirect back to the intended page
 	if (!req.user &&
@@ -87,24 +84,39 @@ app.use((req, res, next) => {
 		!req.path.match(/\./)) {
 		req.session.returnTo = req.path;
 	} else if (req.user &&
-		req.path == "/user/account") {
+		req.path == "/user/profile") {
 		req.session.returnTo = req.path;
 	}
 	next();
 });
+
 app.use(express.static(path.join(__dirname, "public"), { maxAge: 31557600000 }));
 
 /**
  * Primary app routes.
  */
+import homeRoutes = require("./controllers/home/home-routes");
 import authRoutes = require("./controllers/auth/auth-routes");
 import userRoutes = require("./controllers/user/user-routes");
 import newsletterRoutes = require("./controllers/newsletter/newsletter-routes");
 import { read } from "fs";
 
 
+const corsConfig: cors.CorsOptions = {
+	origin: ["https://my-movie-db-roberto.herokuapp.com", "http://localhost:3000"],
+	credentials: true,
+	methods: ["GET,HEAD,OPTIONS,PUT,PATCH,POST,DELETE"]
+};
+
+app.use(cors(corsConfig));
+
+// add your routes
+app.use("/", homeRoutes.Routes.home());
 app.use("/auth", authRoutes.Routes.auth());
 app.use("/newsletter", newsletterRoutes.Routes.index());
 app.use("/user", userRoutes.Routes.index());
+
+// enabling pre-flight
+app.options("*", cors(corsConfig));
 
 module.exports = app;
