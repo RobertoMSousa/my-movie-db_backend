@@ -142,5 +142,7 @@ app.use("/auth", authRoutes.Routes.auth());
 app.use("/newsletter", newsletterRoutes.Routes.index());
 app.use("/user", userRoutes.Routes.index());
 
+// enabling pre-flight
+app.options("*", cors());
 
 module.exports = app;
