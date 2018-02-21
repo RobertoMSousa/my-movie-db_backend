@@ -22,8 +22,6 @@ import { default as User, UserModel, AuthToken, userSalt } from "../../models/Us
  */
 export const postLogin = (req: Request, res: Response, next: NextFunction) => {
 
-	console.log("body-->", req.body); // roberto
-
 	if (!req.body.email) {
 		res.status(206).json({message: "no email provided", error: undefined, data: undefined});
 		return;
