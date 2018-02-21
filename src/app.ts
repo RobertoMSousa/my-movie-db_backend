@@ -104,7 +104,7 @@ import { read } from "fs";
 const corsConfig: cors.CorsOptions = {
 	origin: ["https://my-movie-db-roberto.herokuapp.com", "http://localhost:3000"],
 	credentials: true,
-	methods: "GET,HEAD,OPTIONS,PUT,PATCH,POST,DELETE"
+	methods: ["GET,HEAD,OPTIONS,PUT,PATCH,POST,DELETE"]
 };
 
 app.use(cors(corsConfig));
